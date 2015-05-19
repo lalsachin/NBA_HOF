@@ -124,5 +124,15 @@ lst = ["Willis Reed",
 "Al Cervi",
 "Adrian Dantley"]
 
-for fName in glob.glob(''):
-    print(fName)
+lst = [s.replace(" ","_")+".csv" for s in lst]
+
+for fName in glob.glob('/Users/rahulmatta/Desktop/EECS 349/NBA_HOF/NBA_DATA_CLEAN_ALL_STARS_ONLY/*.csv'):
+    fNameName = os.path.basename(fName)
+    print(fNameName)
+    if (fNameName in lst ):
+        newName = "/Users/rahulmatta/Desktop/EECS 349/NBA_HOF/NBA_DATA_HALL_OF_FAMERS/" + fNameName[:len(fNameName)-4] + "1.csv"
+        print(newName)
+        shutil.copy(fName,newName)
+    else:
+        newName = "/Users/rahulmatta/Desktop/EECS 349/NBA_HOF/NBA_DATA_HALL_OF_FAMERS/" + fNameName[:len(fNameName)-4] + "0.csv"
+        shutil.copy(fName,newName)
