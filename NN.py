@@ -1,18 +1,17 @@
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
 import glob
 import csv
 import numpy
 import os
 
-knn = KNeighborsClassifier(n_neighbors = 1)
-print(knn)
-def getData():
+def getData(dataSet):
     #for each csv file
     #append features and target to global arrays X and y
     #convert to and return numpy ndarray
     X = []
     y = []
-    for fName in glob.glob('Training/*'):
+    for fName in glob.glob(dataSet + '/*'):
         with open(fName, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
             attributesRaw = reader.next()
@@ -38,13 +37,19 @@ def getData():
                 avgAttr /= 4.0
                 absoluteFinal.append(avgAttr)
             X.append(absoluteFinal)
-                                    
+    return [X,y]
+  
 
+
+def trainModel(modelInstance, X, y):
     X = numpy.array(X)
     y = numpy.array(y)
-    print(X.shape)
-    knn.fit(X,y)
+    ret = modelInstance.fit(X,y)
+    return ret
 
+
+
+    
 def positionConvert(stringPos):
     returnVal = 1
     if (stringPos == "PG"):
@@ -58,3 +63,24 @@ def positionConvert(stringPos):
     elif (stringPos == "C"):
         returnVal = 5
     return returnVal
+
+
+def test(model, X):
+    x = model.predict(X)
+    x = x.tolist()
+    return( x)
+        
+def evaluate(y, yPredict):
+    score = metrics.accuracy_score(y,yPredict)
+    return score
+
+
+def main():
+    knn = KNeighborsClassifier(n_neighbors = 2, weights="distance")
+    print(knn)
+    trainingData = getData("Training")
+    model = trainModel(knn, trainingData[0],trainingData[1])
+    testingData = getData('Testing')
+    t =  test(model, testingData[0])
+    score = evaluate(testingData[1], t)
+    return score
